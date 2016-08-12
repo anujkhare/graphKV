@@ -11,8 +11,11 @@ class GraphLayer():
     def connect_db(self, **kwargs):
         raise NotImplementedError
 
-    def set_edge(self, source, attr, dest):
-        '''Set one edge. Each argument must be a string.
+    def set_attributes(self, source, attr, *values):
+        ''' Set one attribute to a list of strings.
+            Internally, the attributes are stored as sets, with keys
+            "source:attr".
+            Example: set_attributes('foo', 'skills', 'skill1', 'skill2')
         '''
         raise NotImplementedError
 
@@ -38,7 +41,13 @@ class GraphLayerRedis(GraphLayer):
        the underlying database in the future if required.
        Requires the address of the redis server.
     '''
-    redis_args = {'host': 'localhost', 'port': 6379, 'db': 0}
+    redis_args = {
+                  'host': 'localhost',
+                  'port': 6379,
+                  'db': 0,
+                  'charset': 'utf-8',
+                  'decode_responses': True
+                 }
 
     def __init__(self, **kwargs):
         '''Constructor takes the arguments for the redis instance connection
@@ -59,23 +68,29 @@ class GraphLayerRedis(GraphLayer):
             print("SOME RANDOM ERROR")
             raise
 
-    def set_edge(self, source, attr, value):
-        '''Set one edge. Each argument must be a string.
+    def set_attributes(self, source, attr, *values):
+        ''' Set one attribute to a list of strings.
+            Internally, the attributes are stored as sets, with keys
+            "source:attr".
+            Example: set_attributes('foo', 'skills', 'skill1', 'skill2')
         '''
         self._test_connection()
-        r = self.redis_conn
-
-        print(r.ping())
-        r.hset(source, attr, value)
+        key = source + ':' + attr
+        self.redis_conn.sadd(key, *values)
 
     def set_multiple_edges(self, **kwargs):
-        '''For each source, provide a dict of attributes to be set.
-           Ex: set_multiple_edges('raj': {'a':'2', 'w':'1'}, 'bob': {'a': '1'})
+        ''' For each source, provide a dict of attributes to be set. Attribute
+            values must be a list.
+            Ex: set_multiple_edges('rj': {'a':'2', 'w':'1'}, 'bob': {'a': '1'})
         '''
         self._test_connection()
         pipe = self.redis_conn.pipeline()
-        for key, value in kwargs.items():
-            pipe.hmset(key, value)
+        for source, attr_dict in kwargs.items():
+            for attr, values in attr_dict.items():
+                key = source + ':' + attr
+                pipe.sadd(key, *values)
+                # print(key)
+                # print(*values)
         pipe.execute()
 
     def save(self):
@@ -85,13 +100,6 @@ class GraphLayerRedis(GraphLayer):
         self._test_connection()
         self.redis_conn.save()
 
-
-if __name__ == '__main__':
-    gr = GraphLayerRedis()
-    gr.set_edge('anuj', 'age', '22')
-    gr.set_edge('anuj', 'height', '182')
-    gr.set_edge('raj', 'age', '22')
-
-    l = {'anuj': {'age': '11', 'w': '12'}, 'babe': {'age': '33', 'w': '3'}}
-    gr.set_multiple_edges(**l)
-    gr.save()
+    def get_by_name(self, name):
+        rval = self.redis_conn.hgetall(name)
+        return rval
