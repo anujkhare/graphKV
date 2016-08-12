@@ -10,10 +10,13 @@ config = {
     'download_url': 'https://codeload.github.com/anujkhare/graphKV/zip/master',
     'author_email': 'khareanuj18@gmail.com',
     'version': '0.1',
-    'install_requires': ['nose'],
-    'packages': ['NAME'],
+    'install_requires': [
+        'nose',
+        'redis'
+    ],
+    'packages': ['graphdb'],
     'scripts': [],
-    'name': 'graphKV'
+    'name': 'graphdb'
 }
 
 setup(**config)
