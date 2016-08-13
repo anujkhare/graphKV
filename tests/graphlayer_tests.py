@@ -2,6 +2,7 @@ from nose.tools import raises
 import fakeredis
 
 import graphdb.graphlayer as graphlayer
+from tests.mocks import MockGraphLayerRedis
 
 
 @raises(NotImplementedError)
@@ -17,14 +18,6 @@ def test_graphlayer_set_edge():
 @raises(NotImplementedError)
 def test_graphlayer_set_multiple_edges():
     graphlayer.GraphLayer().set_multiple_edges()
-
-
-# For GraphLayerRedis MOCK using fakeredis
-# NOTE: FakeRedis does not decode responses like Redis!
-class MockGraphLayerRedis(graphlayer.GraphLayerRedis):
-    def connect_db(self, **kwargs):
-        self.redis_conn = fakeredis.FakeStrictRedis()
-        self.redis_args.update(kwargs)
 
 
 class TestGraphLayerRedis():
