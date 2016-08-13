@@ -26,6 +26,7 @@ class GraphQueryRedis(RedisBaseConnection, GraphQuery):
         ''' Gets the attr of the current results and stores in the memory.
             NOTE: the attr must be a valid attr for the type of the results.
         '''
+        # FIXME: Embarassingly serial!! Try to parallelize?
         self._test_connection()
         r = self.redis_conn
         query_key = self.query_key
@@ -41,7 +42,8 @@ class GraphQueryRedis(RedisBaseConnection, GraphQuery):
     def fetch(self):
         ''' Returns the list of xids in the results.
         '''
-        raise(NotImplementedError)
+        self._test_connection()
+        return self.redis_conn.smembers(self.query_key)
 
     def fetch_with_attributes(self):
         ''' Returns the entire list results along with all their attributes.
@@ -55,7 +57,15 @@ class GraphQueryRedis(RedisBaseConnection, GraphQuery):
             and stores it in it's memory.
             Each query must have the same type of result as this instance.
         '''
-        raise(NotImplementedError)
+        self._test_connection()
+        r = self.redis_conn
+        query_key = self.query_key
+        for ext_query in queries:
+            r.sinterstore(query_key, query_key, ext_query.query_key)
 
     def union(self, *queries):
-        raise(NotImplementedError)
+        self._test_connection()
+        r = self.redis_conn
+        query_key = self.query_key
+        for ext_query in queries:
+            r.sunionstore(query_key, query_key, ext_query.query_key)

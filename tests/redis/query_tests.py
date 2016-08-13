@@ -31,9 +31,10 @@ class TestGraphQueryRedis():
         MockGraphQueryRedis._counter = 0
         self.r = fakeredis.FakeStrictRedis()
         self.gr = MockGraphQueryRedis()
+        self.r.delete('query:1')
+        self.r.delete('query:2')
 
     def tearDown(self):
-        # self.r.flushall()
         pass
 
     def test_graph_query_redis_counter(self):
@@ -86,9 +87,20 @@ class TestGraphQueryRedis():
         assert val == set([b'company:b', b'company:c'])
 
     def test_graph_query_redis_intersection(self):
-        pass
+        xid = 'company:b'
+        attr2 = 'past_employees'
 
-    def test_graph_query_redis_union(self):
+        q2 = MockGraphQueryRedis()
+        q2.by_xid(xid)
+        q2.get_attr(attr2)
+
+        self.gr.by_xid('person:bar')
+        self.gr.intersection(q2)
+
+        val = self.r.smembers('query:1')
+        assert val == set([b'person:bar'])
+
+    def test_graph_query_redis_union_single(self):
         xid = 'company:b'
         attr1 = 'employees'
         attr2 = 'past_employees'
