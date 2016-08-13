@@ -48,7 +48,7 @@ class TestGraphQueryRedis():
     def test_graph_query_redis_by_xid(self):
         xid = b'person:foo'
         self.gr.by_xid(xid)
-        val = self.r.smembers('query1')
+        val = self.r.smembers('query:1')
         assert val == set([xid])
 
     def test_graph_query_redis_get_attr_single(self):
@@ -58,7 +58,7 @@ class TestGraphQueryRedis():
         self.gr.by_xid(xid)
         self.gr.get_attr(attr)
 
-        val = self.r.smembers('query1')
+        val = self.r.smembers('query:1')
         assert val == set([b'company:b', b'company:c'])
 
     def test_graph_query_redis_get_attr_multiple(self):
@@ -70,7 +70,7 @@ class TestGraphQueryRedis():
         self.gr.get_attr(attr1)
         self.gr.get_attr(attr2)
 
-        val = self.r.smembers('query1')
+        val = self.r.smembers('query:1')
         assert val == set([b'person:foo', b'person:bar'])
 # @raises(NotImplementedError)
 # def test_graph_query_redis_by_xid():

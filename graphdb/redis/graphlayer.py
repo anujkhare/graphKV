@@ -4,7 +4,7 @@ from graphdb.redis import RedisBaseConnection
 
 class GraphLayerRedis(RedisBaseConnection, GraphLayer):
     def __init__(self, **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
 
     def set_attributes(self, source, attr, *values):
         ''' Set one attribute to a list of strings.

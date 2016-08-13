@@ -6,10 +6,10 @@ class GraphQueryRedis(RedisBaseConnection, GraphQuery):
     _counter = 0
     _cur_entity_type = None
 
-    def __init__(self):
+    def __init__(self, **kwargs):
         self.__class__._counter += 1
         self.query_key = 'query:' + str(self.__class__._counter)
-        super().__init__()
+        super().__init__(**kwargs)
 
     def by_xid(self, xid):
         ''' gets the entry by xid and stores in the memory
@@ -17,7 +17,7 @@ class GraphQueryRedis(RedisBaseConnection, GraphQuery):
         self._test_connection()
         r = self.redis_conn
         r.delete(self.query_key)
-        r.sadd(xid)
+        r.sadd(self.query_key, xid)
 
     def get_attr(self, attr):
         ''' Gets the attr of the current results and stores in the memory.
