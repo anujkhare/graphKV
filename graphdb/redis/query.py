@@ -3,19 +3,16 @@ from graphdb.core.query import GraphQuery
 
 class GraphQueryRedis(GraphQuery):
     _counter = 0
+    _cur_entity_type = None
 
     def __init__(self):
         self.__class__._counter += 1
         self.query_name = 'query:' + str(self.__class__._counter)
-# _cur_entity_type = None
 
-#   def __init__(self):
-#       pass
-#
-#   def by_xid(self, xid):
-#       ''' gets the entry by xid and stores in the memory
-#       '''
-#       raise(NotImplementedError)
+    def by_xid(self, xid):
+        ''' gets the entry by xid and stores in the memory
+        '''
+        raise(NotImplementedError)
 #
 #   def get_attr(self, attr):
 #       ''' Gets the attr of the current results and stores in the memory.
