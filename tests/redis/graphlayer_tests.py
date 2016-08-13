@@ -1,23 +1,4 @@
-from nose.tools import raises
-import fakeredis
-
-import graphdb.graphlayer as graphlayer
-from tests.mocks import MockGraphLayerRedis
-
-
-@raises(NotImplementedError)
-def test_graphlayer_save():
-    graphlayer.GraphLayer().save()
-
-
-@raises(NotImplementedError)
-def test_graphlayer_set_edge():
-    graphlayer.GraphLayer().set_attributes('foo', 'bar', 'baz')
-
-
-@raises(NotImplementedError)
-def test_graphlayer_set_multiple_edges():
-    graphlayer.GraphLayer().set_multiple_edges()
+from tests.redis import fakeredis, MockGraphLayerRedis
 
 
 class TestGraphLayerRedis():
@@ -36,9 +17,9 @@ class TestGraphLayerRedis():
         assert val == set(values)
 
     def test_graphlayer_redis_set_multiple_edges(self):
-        foo_a = [b'1', b'2', b'3']
-        foo_b = [b'5']
-        bar_a = [b'11', b'22']
+        foo_a = set([b'1', b'2', b'3'])
+        foo_b = set([b'5'])
+        bar_a = set([b'11', b'22'])
         l = {
             'foo': {'a': foo_a, 'b': foo_b},
             'bar': {'a': bar_a}
@@ -48,6 +29,6 @@ class TestGraphLayerRedis():
         r_foo_a = self.r.smembers('foo:a')
         r_foo_b = self.r.smembers('foo:b')
         r_bar_a = self.r.smembers('bar:a')
-        assert set(foo_a) == r_foo_a
-        assert set(foo_b) == r_foo_b
-        assert set(bar_a) == r_bar_a
+        assert foo_a == r_foo_a
+        assert foo_b == r_foo_b
+        assert bar_a == r_bar_a
