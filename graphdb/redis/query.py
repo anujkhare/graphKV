@@ -26,7 +26,17 @@ class GraphQueryRedis(RedisBaseConnection, GraphQuery):
         ''' Gets the attr of the current results and stores in the memory.
             NOTE: the attr must be a valid attr for the type of the results.
         '''
-        raise(NotImplementedError)
+        self._test_connection()
+        r = self.redis_conn
+        query_key = self.query_key
+
+        cur_keys = r.smembers(query_key)
+        r.delete(query_key)
+        for key in cur_keys:
+            attr_key = key.decode('ascii') + ':' + attr
+            # print(attr_key)
+            r.sunionstore(query_key, query_key, attr_key)
+            # print(r.smembers(query_key))
 
     def fetch(self):
         ''' Returns the list of xids in the results.
