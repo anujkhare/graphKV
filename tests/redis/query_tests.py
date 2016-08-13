@@ -24,7 +24,7 @@ def setup_module():
     MockGraphLayerRedis().set_multiple_edges(**mock_data)
 
 
-class TestGraphLayerRedis():
+class TestGraphQueryRedis():
     def setUp(self):
         MockGraphQueryRedis._counter = 0
         self.r = fakeredis.FakeStrictRedis()

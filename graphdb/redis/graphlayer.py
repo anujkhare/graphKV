@@ -2,8 +2,8 @@ from graphdb.core.graphlayer import GraphLayer
 from graphdb.redis import RedisBaseConnection
 
 
-class GraphLayerRedis(GraphLayer, RedisBaseConnection):
-    def __init__(self):
+class GraphLayerRedis(RedisBaseConnection, GraphLayer):
+    def __init__(self, **kwargs):
         super().__init__()
 
     def set_attributes(self, source, attr, *values):

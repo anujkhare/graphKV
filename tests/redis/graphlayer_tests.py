@@ -9,7 +9,7 @@ class TestGraphLayerRedis():
     def tearDown(self):
         self.r.flushall()
 
-    def test_graphlayer_redis_set_edge(self):
+    def test_graphlayer_redis_set_attributes(self):
         values = [b'skill1', b'skill2']
         self.gr.set_attributes('foo', 'skills', *values)
 
