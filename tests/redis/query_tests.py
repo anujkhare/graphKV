@@ -24,6 +24,8 @@ def setup_module():
     MockGraphLayerRedis().set_multiple_edges(**mock_data)
 
 
+# NOTE: fakeredis used in MockGraphQueryRedis does NOT support decoding
+# strings. Hence, results are binary strings. Decoding is done in redis.
 class TestGraphQueryRedis():
     def setUp(self):
         MockGraphQueryRedis._counter = 0
@@ -72,21 +74,32 @@ class TestGraphQueryRedis():
 
         val = self.r.smembers('query:1')
         assert val == set([b'person:foo', b'person:bar'])
-# @raises(NotImplementedError)
-# def test_graph_query_redis_by_xid():
-#     MockGraphQueryRedis().by_xid('foo')
-# @raises(NotImplementedError)
-# def test_graph_query_redis_get_attr():
-#     MockGraphQueryRedis().get_attr('foo')
-# @raises(NotImplementedError)
-# def test_graph_query_redis_fetch():
-#     MockGraphQueryRedis().fetch()
-# @raises(NotImplementedError)
-# def test_graph_query_redis_fetch_with_attributes():
-#     MockGraphQueryRedis().fetch_with_attributes()
-# @raises(NotImplementedError)
-# def test_graph_query_redis_intersection():
-#     MockGraphQueryRedis().intersection()
-# @raises(NotImplementedError)
-# def test_graph_query_redis_union():
-#     MockGraphQueryRedis().union()
+
+    def test_graph_query_redis_fetch(self):
+        xid = 'person:foo'
+        attr = 'past_company'
+
+        self.gr.by_xid(xid)
+        self.gr.get_attr(attr)
+
+        val = self.gr.fetch()
+        assert val == set([b'company:b', b'company:c'])
+
+    def test_graph_query_redis_intersection(self):
+        pass
+
+    def test_graph_query_redis_union(self):
+        xid = 'company:b'
+        attr1 = 'employees'
+        attr2 = 'past_employees'
+
+        q2 = MockGraphQueryRedis()
+        q2.by_xid(xid)
+        q2.get_attr(attr2)
+
+        self.gr.by_xid(xid)
+        self.gr.get_attr(attr1)
+        self.gr.union(q2)
+
+        val = self.r.smembers('query:1')
+        assert val == set([b'person:baz', b'person:foo', b'person:bar'])

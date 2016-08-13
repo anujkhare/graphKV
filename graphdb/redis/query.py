@@ -3,7 +3,7 @@ from graphdb.redis import RedisBaseConnection
 
 
 class GraphQueryRedis(RedisBaseConnection, GraphQuery):
-    ''' NOTE: The key "test" is changed in this method. If the same redis
+    ''' NOTE: The key "query:<i>" is changed in this method. If the same redis
         instance is shared for other databases, be forewarned!
     '''
     _counter = 0
@@ -45,6 +45,8 @@ class GraphQueryRedis(RedisBaseConnection, GraphQuery):
 
     def fetch_with_attributes(self):
         ''' Returns the entire list results along with all their attributes.
+            This is NOT possible without the schema, because of the way the
+            values are stored.
         '''
         raise(NotImplementedError)
 
