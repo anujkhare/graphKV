@@ -3,6 +3,9 @@ from graphdb.redis import RedisBaseConnection
 
 
 class GraphQueryRedis(RedisBaseConnection, GraphQuery):
+    ''' NOTE: The key "test" is changed in this method. If the same redis
+        instance is shared for other databases, be forewarned!
+    '''
     _counter = 0
     _cur_entity_type = None
 
