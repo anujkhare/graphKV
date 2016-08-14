@@ -1,0 +1,65 @@
+{
+ "_comment": "entities define all possible node types in the data. Attributes need to be defined",
+ "_attributes": "The value type of attributes must be a valid 'entity' or 'literal'",
+ "_back_links": "We can define the name of the backlink attribute as the second element in the attribute list. For example: person:'studied at' is of type 'college', the backlink 'alumni' will be generated from 'college' to 'person'",
+ "_templates": "For repeating fields, use a template. Define it separtely in 'templates' dict",
+
+
+ "schema-name": "angel-co",
+
+ "literals": [
+    "date",
+    "website",
+    "number",
+    "string"
+ ],
+
+ "_note_templates": "Backlinks are not supported currently in templates.",
+ "templates": {
+    "_basic_info": {
+      "name": "string",
+      "website": "website",
+      "uid": "string",
+      "type": "string"
+    }
+ },
+
+ "entities": {
+    "company": {
+      "product": "string",
+      "marketplace": "string",
+      "size": "number",
+      "located in": ["city", "based companies"],
+      "founders": ["person", "found company"],
+      "current employees": ["person", "work at"],
+      "past employees": ["person", "worked at"],
+      "investors": ["person", "invested in"],
+      "advisors": ["person", "are advisor at"],
+      "funding rounds": ["funding-round"],
+      "_templates": ["_basic_info"]
+    },
+
+    "person": {
+      "studied at": ["college", "alumni"],
+      "skills": ["skills", "are skilled at"],
+      "located in": ["city", "based person"],
+      "_templates": ["_basic_info"]
+    },
+
+    "city": {
+      "_templates": ["_basic_info"]
+    },
+
+    "college": {
+      "_templates": ["_basic_info"]
+    },
+
+    "funding-round": {
+      "_templates": ["_basic_info"]
+    },
+
+    "skills": {
+      "_templates": ["_basic_info"]
+    }
+ }
+}
