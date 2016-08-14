@@ -46,6 +46,7 @@ class TestSchemaBacklinksHelper():
         attr_dict = {
                      'name': 'foo oof',
                      'uid': 'foo',
+                     'type': 'person',
                      'studied at': 'college-bar'
                      }
         out_dict = bh.get_backlinks(attr_dict)
@@ -53,12 +54,14 @@ class TestSchemaBacklinksHelper():
         expected_dict = {
                          'college-bar': {
                             'uid': 'college-bar',
-                            'alumni': 'foo'
+                            'alumni': 'foo',
+                            'type': 'college'
                           }
                         }
 
         assert expected_dict == out_dict
 
+    # Again, attr value can be a string, list or set
     def test_schema_get_backlinks_multiple(self):
         bh = self.backhelper
         attr_dict = {
@@ -75,7 +78,7 @@ class TestSchemaBacklinksHelper():
                             'uid': 'person1',
                             'work at': 'foo',
                             'type': 'person',
-                            'founded': 'foo'
+                            'found company': 'foo'
                           },
                          'person2': {
                             'uid': 'person2',
@@ -83,7 +86,4 @@ class TestSchemaBacklinksHelper():
                             'type': 'person'
                           }
                         }
-
-        print(out_dict)
-        print(expected_dict)
         assert expected_dict == out_dict
