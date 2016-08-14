@@ -12,7 +12,8 @@ config = {
     'version': '0.1',
     'install_requires': [
         'nose',
-        'redis'
+        'redis',
+        'warnings'
     ],
     'packages': ['graphdb'],
     'scripts': [],
