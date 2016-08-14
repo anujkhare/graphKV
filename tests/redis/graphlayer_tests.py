@@ -16,10 +16,11 @@ class TestGraphLayerRedis():
         val = self.r.smembers('foo:skills')
         assert val == set(values)
 
+    # Attributes can be single str, lists or dicts!
     def test_graphlayer_redis_set_multiple_edges(self):
         foo_a = set([b'1', b'2', b'3'])
-        foo_b = set([b'5'])
-        bar_a = set([b'11', b'22'])
+        foo_b = '11'
+        bar_a = [b'11', b'22']
         l = {
             'foo': {'a': foo_a, 'b': foo_b},
             'bar': {'a': bar_a}
@@ -30,5 +31,5 @@ class TestGraphLayerRedis():
         r_foo_b = self.r.smembers('foo:b')
         r_bar_a = self.r.smembers('bar:a')
         assert foo_a == r_foo_a
-        assert foo_b == r_foo_b
-        assert bar_a == r_bar_a
+        assert set(bar_a) == r_bar_a
+        assert set([foo_b.encode()]) == r_foo_b

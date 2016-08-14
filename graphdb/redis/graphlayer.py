@@ -18,7 +18,7 @@ class GraphLayerRedis(RedisBaseConnection, GraphLayer):
 
     def set_multiple_edges(self, **kwargs):
         ''' For each source, provide a dict of attributes to be set. Attribute
-            values must be a list or a set.
+            values must be a list, set, or a str. Binary strings NOT supported.
             Ex: set_multiple_edges('rj': {'a':'2', 'w':'1'}, 'bob': {'a': '1'})
         '''
         self._test_connection()
@@ -26,9 +26,9 @@ class GraphLayerRedis(RedisBaseConnection, GraphLayer):
         for source, attr_dict in kwargs.items():
             for attr, values in attr_dict.items():
                 key = source + ':' + attr
+                if type(values) is str:
+                    values = [values]
                 pipe.sadd(key, *values)
-                # print(key)
-                # print(*values)
         pipe.execute()
 
     def save(self):
