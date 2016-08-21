@@ -48,11 +48,17 @@ class TestGraphQueryRedis():
         MockGraphQueryRedis()
         assert MockGraphQueryRedis._counter == 5
 
-    def test_graph_query_redis_by_xid(self):
+    def test_graph_query_redis_by_xid_single(self):
         xid = b'person:foo'
         self.gr.by_xid(xid)
         val = self.r.smembers('query:1')
         assert val == set([xid])
+
+    def test_graph_query_redis_by_xid_multiple(self):
+        xids = [b'person:foo', b'person:boo']
+        self.gr.by_xid(*xids)
+        val = self.r.smembers('query:1')
+        assert val == set(xids)
 
     def test_graph_query_redis_get_attr_single(self):
         xid = 'person:foo'

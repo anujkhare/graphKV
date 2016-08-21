@@ -14,13 +14,15 @@ class GraphQueryRedis(RedisBaseConnection, GraphQuery):
         self.query_key = 'query:' + str(self.__class__._counter)
         super().__init__(**kwargs)
 
-    def by_xid(self, xid):
-        ''' gets the entry by xid and stores in the memory
+    def by_xid(self, *xids):
+        ''' stores the given xid in the memory
         '''
+        if len(xids) == 0:
+            return 0
         self._test_connection()
         r = self.redis_conn
         r.delete(self.query_key)
-        r.sadd(self.query_key, xid)
+        r.sadd(self.query_key, *xids)
         return r.scard(self.query_key)
 
     def get_attr(self, attr):
