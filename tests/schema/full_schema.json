@@ -1,27 +1,5 @@
 {
     "entities": {
-        "city": {
-            "based companies": {
-                "reverse": "located in",
-                "to": "company"
-            },
-            "based person": {
-                "reverse": "located in",
-                "to": "person"
-            },
-            "name": {
-                "to": "string"
-            },
-            "type": {
-                "to": "string"
-            },
-            "uid": {
-                "to": "string"
-            },
-            "website": {
-                "to": "website"
-            }
-        },
         "college": {
             "alumni": {
                 "reverse": "studied at",
@@ -45,6 +23,10 @@
                 "reverse": "are advisor at",
                 "to": "person"
             },
+            "board members": {
+                "reverse": "board member of",
+                "to": "person"
+            },
             "current employees": {
                 "reverse": "work at",
                 "to": "person"
@@ -62,10 +44,11 @@
             },
             "located in": {
                 "reverse": "based companies",
-                "to": "city"
+                "to": "location"
             },
-            "marketplace": {
-                "to": "string"
+            "markets": {
+                "reverse": "companies",
+                "to": "market"
             },
             "name": {
                 "to": "string"
@@ -104,9 +87,53 @@
                 "to": "website"
             }
         },
+        "location": {
+            "based companies": {
+                "reverse": "located in",
+                "to": "company"
+            },
+            "based person": {
+                "reverse": "located in",
+                "to": "person"
+            },
+            "name": {
+                "to": "string"
+            },
+            "type": {
+                "to": "string"
+            },
+            "uid": {
+                "to": "string"
+            },
+            "website": {
+                "to": "website"
+            }
+        },
+        "market": {
+            "companies": {
+                "reverse": "markets",
+                "to": "company"
+            },
+            "name": {
+                "to": "string"
+            },
+            "type": {
+                "to": "string"
+            },
+            "uid": {
+                "to": "string"
+            },
+            "website": {
+                "to": "website"
+            }
+        },
         "person": {
             "are advisor at": {
                 "reverse": "advisors",
+                "to": "company"
+            },
+            "board member of": {
+                "reverse": "board members",
                 "to": "company"
             },
             "found company": {
@@ -119,14 +146,14 @@
             },
             "located in": {
                 "reverse": "based person",
-                "to": "city"
+                "to": "location"
             },
             "name": {
                 "to": "string"
             },
             "skills": {
-                "reverse": "are skilled at",
-                "to": "skills"
+                "reverse": "skilled",
+                "to": "skill"
             },
             "studied at": {
                 "reverse": "alumni",
@@ -150,13 +177,13 @@
                 "to": "company"
             }
         },
-        "skills": {
-            "are skilled at": {
-                "reverse": "skills",
-                "to": "person"
-            },
+        "skill": {
             "name": {
                 "to": "string"
+            },
+            "skilled": {
+                "reverse": "skills",
+                "to": "person"
             },
             "type": {
                 "to": "string"

@@ -27,26 +27,27 @@
  "entities": {
     "company": {
       "product": "string",
-      "marketplace": "string",
       "size": "number",
-      "located in": ["city", "based companies"],
+      "markets": ["market", "companies"],
+      "located in": ["location", "based companies"],
       "founders": ["person", "found company"],
       "current employees": ["person", "work at"],
       "past employees": ["person", "worked at"],
       "investors": ["person", "invested in"],
       "advisors": ["person", "are advisor at"],
       "funding rounds": ["funding-round"],
+      "board members": ["person", "board member of"],
       "_templates": ["_basic_info"]
     },
 
     "person": {
       "studied at": ["college", "alumni"],
-      "skills": ["skills", "are skilled at"],
-      "located in": ["city", "based person"],
+      "skills": ["skill", "skilled"],
+      "located in": ["location", "based person"],
       "_templates": ["_basic_info"]
     },
 
-    "city": {
+    "location": {
       "_templates": ["_basic_info"]
     },
 
@@ -58,7 +59,11 @@
       "_templates": ["_basic_info"]
     },
 
-    "skills": {
+    "market": {
+      "_templates": ["_basic_info"]
+    },
+
+    "skill": {
       "_templates": ["_basic_info"]
     }
  }

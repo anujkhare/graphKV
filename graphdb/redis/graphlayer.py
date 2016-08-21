@@ -4,6 +4,7 @@ from graphdb.redis import RedisBaseConnection
 
 class GraphLayerRedis(RedisBaseConnection, GraphLayer):
     def __init__(self, **kwargs):
+        ' Args: host, port, db '
         super().__init__(**kwargs)
 
     def set_attributes(self, source, attr, *values):
@@ -12,6 +13,8 @@ class GraphLayerRedis(RedisBaseConnection, GraphLayer):
             "source:attr".
             Example: set_attributes('foo', 'skills', 'skill1', 'skill2')
         '''
+        if len(values) == 0:
+            return
         self._test_connection()
         key = source + ':' + attr
         self.redis_conn.sadd(key, *values)
@@ -25,6 +28,8 @@ class GraphLayerRedis(RedisBaseConnection, GraphLayer):
         pipe = self.redis_conn.pipeline()
         for source, attr_dict in kwargs.items():
             for attr, values in attr_dict.items():
+                if len(values) == 0:
+                    continue
                 key = source + ':' + attr
                 if type(values) is str:
                     values = [values]

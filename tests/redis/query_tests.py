@@ -115,3 +115,13 @@ class TestGraphQueryRedis():
 
         val = self.r.smembers('query:1')
         assert val == set([b'person:baz', b'person:foo', b'person:bar'])
+
+    def test_graph_query_redis_clear(self):
+        xid = 'person:foo'
+        attr = 'past_company'
+
+        self.gr.by_xid(xid)
+        self.gr.get_attr(attr)
+        self.gr.clear()
+        val = self.r.smembers('query:1')
+        assert val == set()

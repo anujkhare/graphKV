@@ -21,6 +21,7 @@ class GraphQueryRedis(RedisBaseConnection, GraphQuery):
         r = self.redis_conn
         r.delete(self.query_key)
         r.sadd(self.query_key, xid)
+        return r.scard(self.query_key)
 
     def get_attr(self, attr):
         ''' Gets the attr of the current results and stores in the memory.
@@ -38,6 +39,7 @@ class GraphQueryRedis(RedisBaseConnection, GraphQuery):
             # print(attr_key)
             r.sunionstore(query_key, query_key, attr_key)
             # print(r.smembers(query_key))
+        return r.scard(self.query_key)
 
     def fetch(self):
         ''' Returns the list of xids in the results.
@@ -62,6 +64,7 @@ class GraphQueryRedis(RedisBaseConnection, GraphQuery):
         query_key = self.query_key
         for ext_query in queries:
             r.sinterstore(query_key, query_key, ext_query.query_key)
+        return r.scard(self.query_key)
 
     def union(self, *queries):
         self._test_connection()
@@ -69,3 +72,7 @@ class GraphQueryRedis(RedisBaseConnection, GraphQuery):
         query_key = self.query_key
         for ext_query in queries:
             r.sunionstore(query_key, query_key, ext_query.query_key)
+        return r.scard(self.query_key)
+
+    def clear(self):
+        self.redis_conn.delete(self.query_key)

@@ -6,6 +6,9 @@ class BacklinksHelper():
         self.parse_schema(path_to_schema)
 
     def parse_schema(self, path_to_schema):
+        if not path_to_schema:
+            print('Invalid path to schema file')
+            raise(ValueError)
         with open(path_to_schema) as infile:
             schema = json.load(infile)
         # print(schema)
@@ -14,18 +17,22 @@ class BacklinksHelper():
 
     def validate_attributes(self, entity_type, attr_dict):
         if entity_type not in self.entities:
-            print('entity', entity_type, 'is not defined in the schema')
+            print('entity "', entity_type, '" is not defined in the schema')
             return False
 
         entity_attrs = self.entities[entity_type]
         for attr, _ in attr_dict.items():
             if attr not in entity_attrs:
-                print('attr', attr, 'is not a attribute of', entity_type)
+                print('attr "', attr, '" is not a attribute of', entity_type)
                 return False
 
         return True
 
     def get_backlinks(self, attr_dict):
+        ''' Takes one entity's attribute dict and returns a dict with keys =
+            uids, and values = attribute dictionaries for the respective
+            entity.
+        '''
         entity_type = attr_dict.get('type', None)
         if entity_type is None:
             print('No "type" attribute found in attr_dict.')

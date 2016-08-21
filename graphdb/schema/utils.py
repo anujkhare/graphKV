@@ -29,7 +29,8 @@ def generate_full_schema(partial_schema):
                                       *val_type)
                 continue
 
-            if type(val_type) is str:  # only one value - literal type
+            print(val_type, type(val_type))
+            if type(val_type) is not list:  # only one value - literal type
                 if val_type not in literals:
                     print("The literal type " + val_type + " is not defined"
                           "in 'literals'")
