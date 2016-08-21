@@ -14,22 +14,31 @@ class GraphQueryRedis(RedisBaseConnection, GraphQuery):
         self.query_key = 'query:' + str(self.__class__._counter)
         super().__init__(**kwargs)
 
-    def by_xid(self, *xids):
-        ''' stores the given xid in the memory
+    def add_values(self, *values):
+        ''' adds the given values to the results set.
         '''
-        if len(xids) == 0:
+        if len(values) == 0:
             return 0
         self._test_connection()
         r = self.redis_conn
-        r.delete(self.query_key)
-        r.sadd(self.query_key, *xids)
+        r.sadd(self.query_key, *values)
+        return r.scard(self.query_key)
+
+    def at_uids(self, *uids):
+        ''' Stores the values at the given uids into the results set.
+        '''
+        if len(uids) == 0:
+            return 0
+        self._test_connection()
+        r = self.redis_conn
+        for uid in uids:
+            r.sunionstore(self.query_key, self.query_key, uid)
         return r.scard(self.query_key)
 
     def get_attr(self, attr):
         ''' Gets the attr of the current results and stores in the memory.
             NOTE: the attr must be a valid attr for the type of the results.
         '''
-        # FIXME: Embarassingly serial!! Try to parallelize?
         self._test_connection()
         r = self.redis_conn
         query_key = self.query_key
@@ -38,9 +47,7 @@ class GraphQueryRedis(RedisBaseConnection, GraphQuery):
         r.delete(query_key)
         for key in cur_keys:
             attr_key = key.decode('ascii') + ':' + attr
-            # print(attr_key)
             r.sunionstore(query_key, query_key, attr_key)
-            # print(r.smembers(query_key))
         return r.scard(self.query_key)
 
     def fetch(self):
@@ -80,3 +87,6 @@ class GraphQueryRedis(RedisBaseConnection, GraphQuery):
 
     def clear(self):
         self.redis_conn.delete(self.query_key)
+
+    def filter_by_attr_size(self):
+        pass

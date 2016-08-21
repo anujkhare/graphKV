@@ -4,8 +4,13 @@ class GraphQuery():
     def __init__(self):
         pass
 
-    def by_xid(self, xid):
+    def add_values(self, xid):
         ''' gets the entry by xid and stores in the memory
+        '''
+        raise(NotImplementedError)
+
+    def at_uids(self, *uids):
+        ''' Stores the values at the given uids into the results set.
         '''
         raise(NotImplementedError)
 
@@ -33,4 +38,10 @@ class GraphQuery():
         raise(NotImplementedError)
 
     def union(self, *queries):
+        raise(NotImplementedError)
+
+    def clear(self):
+        raise(NotImplementedError)
+
+    def filter_by_attr_size(self):
         raise(NotImplementedError)

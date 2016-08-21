@@ -4,8 +4,8 @@ from graphdb.core.query import GraphQuery
 
 
 @raises(NotImplementedError)
-def test_graph_query_by_xid():
-    GraphQuery().by_xid('foo')
+def test_graph_query_add_values():
+    GraphQuery().add_values('foo')
 
 
 @raises(NotImplementedError)

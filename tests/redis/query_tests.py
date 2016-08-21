@@ -48,15 +48,21 @@ class TestGraphQueryRedis():
         MockGraphQueryRedis()
         assert MockGraphQueryRedis._counter == 5
 
-    def test_graph_query_redis_by_xid_single(self):
+    def test_graph_query_redis_add_values_single(self):
         xid = b'person:foo'
-        self.gr.by_xid(xid)
+        self.gr.add_values(xid)
         val = self.r.smembers('query:1')
         assert val == set([xid])
 
-    def test_graph_query_redis_by_xid_multiple(self):
+    def test_graph_query_redis_at_uids(self):
+        self.gr.at_uids('people:list', 'companies:list')
+        val = self.r.smembers('query:1')
+        assert val == set([b'person:foo', b'person:bar', b'person:baz',
+                           b'company:a', b'company:b', b'company:c'])
+
+    def test_graph_query_redis_add_values_multiple(self):
         xids = [b'person:foo', b'person:boo']
-        self.gr.by_xid(*xids)
+        self.gr.add_values(*xids)
         val = self.r.smembers('query:1')
         assert val == set(xids)
 
@@ -64,7 +70,7 @@ class TestGraphQueryRedis():
         xid = 'person:foo'
         attr = 'past_company'
 
-        self.gr.by_xid(xid)
+        self.gr.add_values(xid)
         self.gr.get_attr(attr)
 
         val = self.r.smembers('query:1')
@@ -75,7 +81,7 @@ class TestGraphQueryRedis():
         attr1 = 'past_company'    # ['company:b', 'company:c']
         attr2 = 'past_employees'  # company:c does not have any, should be ok
 
-        self.gr.by_xid(xid)
+        self.gr.add_values(xid)
         self.gr.get_attr(attr1)
         self.gr.get_attr(attr2)
 
@@ -86,7 +92,7 @@ class TestGraphQueryRedis():
         xid = 'person:foo'
         attr = 'past_company'
 
-        self.gr.by_xid(xid)
+        self.gr.add_values(xid)
         self.gr.get_attr(attr)
 
         val = self.gr.fetch()
@@ -97,17 +103,17 @@ class TestGraphQueryRedis():
         attr2 = 'past_employees'
 
         q2 = MockGraphQueryRedis()
-        q2.by_xid(xid)
+        q2.add_values(xid)
         q2.get_attr(attr2)
 
-        self.gr.by_xid('person:bar')
+        self.gr.add_values('person:bar')
         self.gr.intersection(q2)
 
         val = self.r.smembers('query:1')
         assert val == set([b'person:bar'])
 
     def test_graph_query_redis_intersection_empty(self):
-        self.gr.by_xid('foo')
+        self.gr.add_values('foo')
         q2 = MockGraphQueryRedis()
         self.gr.intersection(q2)
         val = self.r.smembers('query:1')
@@ -119,10 +125,10 @@ class TestGraphQueryRedis():
         attr2 = 'past_employees'
 
         q2 = MockGraphQueryRedis()
-        q2.by_xid(xid)
+        q2.add_values(xid)
         q2.get_attr(attr2)
 
-        self.gr.by_xid(xid)
+        self.gr.add_values(xid)
         self.gr.get_attr(attr1)
         self.gr.union(q2)
 
@@ -133,7 +139,7 @@ class TestGraphQueryRedis():
         xid = 'person:foo'
         attr = 'past_company'
 
-        self.gr.by_xid(xid)
+        self.gr.add_values(xid)
         self.gr.get_attr(attr)
         self.gr.clear()
         val = self.r.smembers('query:1')
