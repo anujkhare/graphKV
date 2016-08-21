@@ -106,6 +106,13 @@ class TestGraphQueryRedis():
         val = self.r.smembers('query:1')
         assert val == set([b'person:bar'])
 
+    def test_graph_query_redis_intersection_empty(self):
+        self.gr.by_xid('foo')
+        q2 = MockGraphQueryRedis()
+        self.gr.intersection(q2)
+        val = self.r.smembers('query:1')
+        assert val == set()
+
     def test_graph_query_redis_union_single(self):
         xid = 'company:b'
         attr1 = 'employees'

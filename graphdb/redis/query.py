@@ -65,6 +65,8 @@ class GraphQueryRedis(RedisBaseConnection, GraphQuery):
         r = self.redis_conn
         query_key = self.query_key
         for ext_query in queries:
+            if r.scard(ext_query.query_key) == 0:
+                r.delete(self.query_key)
             r.sinterstore(query_key, query_key, ext_query.query_key)
         return r.scard(self.query_key)
 
