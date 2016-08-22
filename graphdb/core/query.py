@@ -49,3 +49,8 @@ class GraphQuery():
             discarded.
         '''
         raise(NotImplementedError)
+
+    def count(self):
+        ''' Returns the number of results in the query object.
+        '''
+        raise(NotImplementedError)

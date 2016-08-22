@@ -116,3 +116,8 @@ class GraphQueryRedis(RedisBaseConnection, GraphQuery):
 
         r.srem(self.query_key, *to_remove)
         return self
+
+    def count(self):
+        ''' Returns the number of results in the query object.
+        '''
+        return self.redis_conn.scard(self.query_key)
