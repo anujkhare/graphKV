@@ -1,6 +1,13 @@
-We follow the broad database model of DGraph, but in a simplified
-manner, and implemented from scratch in Python, with very little robustness
-and flexibility.
+# TODO
+Some thoughts on what would be nice additions to this:
+- De-duplication by using online search engines on the names!
+- Queries of the form:
+  - STARTUPS FOUNDED BY PEOPLE WHO HAVE WORKED AT AMAZON, FLIPKART OR GOOGLE
+  - This is a basic union query. This particular style of syntax needs to be handled by the nl parser..
+
+- Multiprocessing.. look at the links:
+  - https://www.toptal.com/python/beginners-guide-to-concurrency-and-parallelism-in-python
+  - http://stackoverflow.com/questions/10475448/very-simple-concurrent-programming-in-python
 
 Because we don't need to run very complex queries, I would like to build a
 simple parser and engine to execute the queries.
@@ -22,7 +29,7 @@ of queries I want to process..
 The idea is to write quick code that works well for this specific case, and not
 a general or (largely) scalable implementation.
 
-# 
+#
 ## UID list
 Every single value, be it a literal value or an entity must be hashed
 to an unique UID, and the mapping list will be stored in a single map.
@@ -59,7 +66,7 @@ Eg:
 - `company` and `person` are entities
 - the attribute `founded by` will be defined as `company -> person`.
 
-## 
+##
 We will (might) scrape using multiple servers, but will use only a single Redis
 server instance, on one computer, which will be accessed by all the scrapers.
 
