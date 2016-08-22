@@ -9,10 +9,19 @@ class GraphQueryRedis(RedisBaseConnection, GraphQuery):
     _counter = 0
     _cur_entity_type = None
 
-    def __init__(self, **kwargs):
+    def __init__(self, *values, **kwargs):
+        ' values: The initial strings to populate the results '
         self.__class__._counter += 1
         self.query_key = 'query:' + str(self.__class__._counter)
         super().__init__(**kwargs)
+        self.clear()
+        self.add_values(*values)
+
+    # @classmethod
+    # def init_with_values(cls, *values, **kwargs):
+    #     instance = cls(**kwargs)
+    #     instance.add_values(*values)
+    #     return instance
 
     def add_values(self, *values):
         ''' adds the given values to the results set.
@@ -22,18 +31,19 @@ class GraphQueryRedis(RedisBaseConnection, GraphQuery):
         self._test_connection()
         r = self.redis_conn
         r.sadd(self.query_key, *values)
-        return r.scard(self.query_key)
+        # return r.scard(self.query_key)
+        return self
 
     def at_uids(self, *uids):
         ''' Stores the values at the given uids into the results set.
         '''
-        if len(uids) == 0:
-            return 0
-        self._test_connection()
-        r = self.redis_conn
-        for uid in uids:
-            r.sunionstore(self.query_key, self.query_key, uid)
-        return r.scard(self.query_key)
+        if len(uids) != 0:
+            self._test_connection()
+            r = self.redis_conn
+            for uid in uids:
+                r.sunionstore(self.query_key, self.query_key, uid)
+            # return r.scard(self.query_key)
+        return self
 
     def get_attr(self, attr):
         ''' Gets the attr of the current results and stores in the memory.
@@ -48,7 +58,8 @@ class GraphQueryRedis(RedisBaseConnection, GraphQuery):
         for key in cur_keys:
             attr_key = key.decode('ascii') + ':' + attr
             r.sunionstore(query_key, query_key, attr_key)
-        return r.scard(self.query_key)
+        # return r.scard(self.query_key)
+        return self
 
     def fetch(self):
         ''' Returns the list of xids in the results.
@@ -75,7 +86,8 @@ class GraphQueryRedis(RedisBaseConnection, GraphQuery):
             if r.scard(ext_query.query_key) == 0:
                 r.delete(self.query_key)
             r.sinterstore(query_key, query_key, ext_query.query_key)
-        return r.scard(self.query_key)
+        # return r.scard(self.query_key)
+        return self
 
     def union(self, *queries):
         self._test_connection()
@@ -83,10 +95,24 @@ class GraphQueryRedis(RedisBaseConnection, GraphQuery):
         query_key = self.query_key
         for ext_query in queries:
             r.sunionstore(query_key, query_key, ext_query.query_key)
-        return r.scard(self.query_key)
+        # return r.scard(self.query_key)
+        return self
 
     def clear(self):
         self.redis_conn.delete(self.query_key)
+        return self
 
-    def filter_by_attr_size(self):
-        pass
+    def filter_by_func(self, filter_func):
+        ''' filter_func must take one uid, and return a True, indicating the
+            entity is to be accepted, or False indicating the entity is to be
+            discarded.
+        '''
+        self._test_connection()
+        r = self.redis_conn
+
+        cur_keys = r.smembers(self.query_key)
+        to_remove = [key for key in cur_keys if not
+                     filter_func(GraphQueryRedis(key))]
+
+        r.srem(self.query_key, *to_remove)
+        return self

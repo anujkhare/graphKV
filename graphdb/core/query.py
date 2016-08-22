@@ -43,5 +43,9 @@ class GraphQuery():
     def clear(self):
         raise(NotImplementedError)
 
-    def filter_by_attr_size(self):
+    def filter_by_func(self, filter_func):
+        ''' filter_func must take one uid, and return a True, indicating the
+            entity is to be accepted, or False indicating the entity is to be
+            discarded.
+        '''
         raise(NotImplementedError)
