@@ -14,7 +14,6 @@ q1.clear()
 q1.add_values('indian-institute-of-technology-guwahati')
 q1.get_attr('alumni')
 q1.get_attr('found company')
-print(q1.fetch())
 
 # But there are different abbreviations for locations and colleges
 # iit-guwahati-3 is another. We will deal with such things later, for now:
@@ -73,13 +72,21 @@ q1.filter_by_func(lambda s: s.get_attr('found company').count() == 1)
 q1.get_attr('found company')
 print(q1.count())
 
-# # Count queries
-# # TODO
-# # Number of founders by college
-# print('Number of founders by college')
-# q1.add_values('college')
-# q1.get_attr('alumni')
 
-# # TODO
-# # startups with founders from the same college
-# print('startups with founders from the same college')
+def num_companies(uid):
+    s = GraphQueryRedis(uid)
+    s.get_attr('alumni').get_attr('found company')
+    return s.count()
+# COUNT QUERIES - DIY!
+print('\n... Number of companies by college (Top 20) (LARGE QUERY)')
+num_company_by_college = []
+q1.at_uids('college')
+num_company_by_college = [(key, count)
+                          for key, count in ((key, num_companies(key))
+                                             for key in q1.fetch())
+                          if count > 0]
+num_company_by_college.sort(key=lambda x: x[1], reverse=True)
+print(num_company_by_college[:20])
+
+# TODO
+# startups with founders from the same college
